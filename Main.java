@@ -1,6 +1,5 @@
 import entity.*;
 import map.*;
-import loadSave.*;
 import music.*;
 import java.util.*;
 import java.math.BigInteger;
@@ -200,13 +199,13 @@ public class Main extends Application {
                }
             }
 
-            if(p.redBlood.getWidth()<=0){
+            /*if(p.redBlood.getWidth()<=0){
                LoadSave.load();
                //openning.deadScreen(root,stage);
                p.Leftpress = false;
                p.Rightpress = false;
                p.Shift = false;
-            }
+            }*/
 
             //Acting everthing
             Entity.frameRate = frameRatio;
