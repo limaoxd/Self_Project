@@ -16,7 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate; 
-import loadSave.LoadSave;
 
 public class Player extends Entity{
    public Rectangle redBlood;
