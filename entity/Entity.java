@@ -20,11 +20,12 @@ public class  Entity {
    protected double[] Pos = {0,0};
    protected double[] Motion = {0,0};
    protected int Width = 0,Height = 0;
+   public static boolean newBornInGame = true;
    public int collideh;
    public int collidev;
    public int weaponKind=0,hairKind=0,clothKind=0;
    public boolean Rightpress = false ,Leftpress = false ,Up = false ,Down = false ,Shift = false,ShiftRelease=true,Ctrl = false,AtkPressed = false;
-   public boolean damaged =false,rolling =false;
+   public boolean damaged =false,rolling =false,attacking =false;
    public ImageView sprite,partZero,partOne,weapon;
    public Rectangle hitbox;
    public static double frameRate;

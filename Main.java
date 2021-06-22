@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 
 import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
+import javafx.scene.shape.Rectangle;
 
 public class Main extends Application {
    List<Entity> group = new ArrayList<>();
@@ -30,16 +31,20 @@ public class Main extends Application {
    //List<Trigger> trigger = new ArrayList<>();
    List<Background> backGround = new ArrayList<>();
    public static Player p;
+   public static Stirnava boss;
    //public static Savepoint s;
    public static double frameRate;
+   private boolean compliteBoss = false;
    private final long[] frameTimes = new long[100];
    private int frameTimeIndex = 0 ;
    private double frameRatio = 0;
    private boolean arrayFilled = false ;
    private int Ablock_now=7,Ablock_pre=0;
+   private Rectangle fogDoor;
 
    public Main() throws FileNotFoundException{
       p = new Player(1300,300);
+      boss = new Stirnava(6000,950);
       //Read map and build
 
       Background.createBg(backGround);
@@ -55,58 +60,91 @@ public class Main extends Application {
       //Creating a Group object
       Group root = new Group();
 
+      fogDoor = new Rectangle();
       //Creating a scene object
       Scene scene = new Scene(root, 1920, 1080);
-      scene.setFill(Color.web("#A7C064"));
+      
+      scene.setFill(Color.web("#000000"));
+      //scene.setFill(Color.web("#A7C064"));
 
-      //Music.play();
+      Dressing dressing = new Dressing();
 
       scene.setOnKeyPressed(ke -> {
-         if (ke.getCode() == KeyCode.LEFT) p.Leftpress = true;
-         else if (ke.getCode() == KeyCode.RIGHT) p.Rightpress = true;
-         else if (ke.getCode() == KeyCode.UP) p.Up = true;
-         else if (ke.getCode() == KeyCode.DOWN) p.Down = true;
-         else if(ke.getCode() == KeyCode.X) p.AtkPressed =true;
-         else if (ke.getCode() == KeyCode.SHIFT) p.Shift = true;
-         else if (ke.getCode() == KeyCode.CONTROL) p.Ctrl = true;
-         else if (ke.getCode() == KeyCode.DIGIT0) p.weaponKind = 1;
-         else if (ke.getCode() == KeyCode.DIGIT1) p.weaponKind = 2;
-         else if (ke.getCode() == KeyCode.DIGIT2) p.weaponKind = 3;
-         else if (ke.getCode() == KeyCode.DIGIT3) p.weaponKind = 4;
-         else if (ke.getCode() == KeyCode.DIGIT4) p.weaponKind = 5;
-         else if (ke.getCode() == KeyCode.DIGIT5) p.weaponKind = 6;
-         else if (ke.getCode() == KeyCode.DIGIT6) p.weaponKind = 7;
-         else if (ke.getCode() == KeyCode.DIGIT7) p.weaponKind = 8;
-         else if (ke.getCode() == KeyCode.DIGIT8) p.weaponKind = 9;
-         else if (ke.getCode() == KeyCode.DIGIT9) p.weaponKind = 10;
-         //else if (ke.getCode() == KeyCode.E)
+         if(dressing.isDressing()){
+            if (ke.getCode() == KeyCode.LEFT) dressing.LeftPress = true;
+            else if (ke.getCode() == KeyCode.RIGHT) dressing.RightPress = true;
+            else if (ke.getCode() == KeyCode.UP) dressing.UpPress = true;
+            else if (ke.getCode() == KeyCode.DOWN) dressing.DownPress = true;
+            else if (ke.getCode() == KeyCode.ENTER) {
+               dressing.EnterPress = true;
+               p.hairKind = dressing.getHair()+1;
+               p.clothKind = dressing.getCloth()+1;
+               p.weaponKind = dressing.getWeapon()+1;
+            }
+         }else {
+            if (ke.getCode() == KeyCode.LEFT) p.Leftpress = true;
+            else if (ke.getCode() == KeyCode.RIGHT) p.Rightpress = true;
+            else if (ke.getCode() == KeyCode.UP) p.Up = true;
+            else if (ke.getCode() == KeyCode.DOWN) p.Down = true;
+            else if(ke.getCode() == KeyCode.X) p.AtkPressed =true;
+            else if (ke.getCode() == KeyCode.SHIFT) p.Shift = true;
+            else if (ke.getCode() == KeyCode.CONTROL) p.Ctrl = true;
+            else if (ke.getCode() == KeyCode.DIGIT0) p.weaponKind = 1;
+            else if (ke.getCode() == KeyCode.DIGIT1) p.weaponKind = 2;
+            else if (ke.getCode() == KeyCode.DIGIT2) p.weaponKind = 3;
+            else if (ke.getCode() == KeyCode.DIGIT3) p.weaponKind = 4;
+            else if (ke.getCode() == KeyCode.DIGIT4) p.weaponKind = 5;
+            else if (ke.getCode() == KeyCode.DIGIT5) p.weaponKind = 6;
+            else if (ke.getCode() == KeyCode.DIGIT6) p.weaponKind = 7;
+            else if (ke.getCode() == KeyCode.DIGIT7) p.weaponKind = 8;
+            else if (ke.getCode() == KeyCode.DIGIT8) p.weaponKind = 9;
+            else if (ke.getCode() == KeyCode.DIGIT9) p.weaponKind = 10;
+         }
       });
 
       scene.setOnKeyReleased(ke -> {
-         if (ke.getCode() == KeyCode.LEFT) p.Leftpress = false;
-         else if (ke.getCode() == KeyCode.RIGHT) p.Rightpress = false;
-         else if (ke.getCode() == KeyCode.UP) p.Up = false;
-         else if (ke.getCode() == KeyCode.DOWN) p.Down = false;
-         else if (ke.getCode() == KeyCode.SHIFT) {
-            p.Shift = false;
-            p.ShiftRelease=true;
+         if(dressing.isDressing()){
+            if (ke.getCode() == KeyCode.LEFT) dressing.LeftPress = false;
+            else if (ke.getCode() == KeyCode.RIGHT) dressing.RightPress = false;
+            else if (ke.getCode() == KeyCode.UP) dressing.UpPress = false;
+            else if (ke.getCode() == KeyCode.DOWN) dressing.DownPress = false;
+            else if (ke.getCode() == KeyCode.ENTER) dressing.EnterPress = false;
+         }else {
+            if (ke.getCode() == KeyCode.LEFT) p.Leftpress = false;
+            else if (ke.getCode() == KeyCode.RIGHT) p.Rightpress = false;
+            else if (ke.getCode() == KeyCode.UP) p.Up = false;
+            else if (ke.getCode() == KeyCode.DOWN) p.Down = false;
+            else if (ke.getCode() == KeyCode.SHIFT) {
+               p.Shift = false;
+               p.ShiftRelease=true;
+            }
+            else if (ke.getCode() == KeyCode.CONTROL) p.Ctrl = false;
          }
-         else if (ke.getCode() == KeyCode.CONTROL) p.Ctrl = false;
       });
 
       stage.setFullScreen(true);
       stage.setTitle("Soul_Like");
       stage.setScene(scene);
-      stage.getIcons().add(new Image("pic/project_icon.png"));
+      stage.getIcons().add(new Image("pic/icon.png"));
       stage.show();
-      //openning.setImage(stage);
       addE();
       forEach(root,stage);
+
+      dressing.initScreen(root,stage);
 
       //It can refresh screen
       AnimationTimer mainloop = new AnimationTimer() {
          @Override
          public void handle(long t) {
+            if(dressing.isDressing()){
+               dressing.showScreen(stage);
+            }
+            else{
+               Music.play();
+               scene.setFill(Color.web("#A7C064"));
+               sortgroup(root);
+               doorCheck();
+            }
             Entity.setScreenSize(stage.getWidth(),stage.getHeight());
             //calculate the framerate
             long oldFrameTime = frameTimes[frameTimeIndex] ;
@@ -116,47 +154,6 @@ public class Main extends Application {
             if (frameTimeIndex == 0) {
                arrayFilled = true ;
             }
-            
-            sortgroup(root);
-
-            /*if (openning.isStart == true) {
-               openning.time = (openning.time + 1) % frameTimes.length ;
-
-               //lag the loading
-               if(openning.time == 0 && openning.step == 0) {
-                  addE();
-                  openning.step++;
-                  openning.loadingIn(root,stage);
-               }
-               else if(openning.time >= 20 && openning.step == 1) forEach(root,openning,stage);
-               else if(openning.time >= 40 && openning.step == 2) {
-                  openning.step++;
-                  openning.beforestory(root,stage);
-               }
-               else if(openning.isBefore == true && openning.step == 3){
-                  openning.step++;
-                  root.getChildren().addAll(p.bloodbarBase,p.redBlood,p.bloodbar);
-                  root.getChildren().addAll(sw.E_key);
-                  LoadSave.reset(s,p);
-                  Music.change("ProjectMusic.mp3");
-               }
-
-               //for dead screen
-               if(openning.isDead == true){
-                  if(openning.time >= 3 && openning.lightDegree <= 0.8 && openning.isReborn == false){
-                     openning.deadSdarker();
-                  }
-                  if(openning.time >= 1 && openning.isReborn == true){
-                     openning.rebornLoading(root);
-                  }
-               }
-
-               if(openning.isWin == true && openning.isAfter == true){
-                  if(openning.time >= 3 && openning.lightDegree >= 0){
-                     openning.winstart(root);
-                  }
-               }
-            }*/
 
             if (arrayFilled) {
                long elapsedNanos = t - oldFrameTime ;
@@ -199,20 +196,36 @@ public class Main extends Application {
                }
             }
 
-            /*if(p.redBlood.getWidth()<=0){
-               LoadSave.load();
-               //openning.deadScreen(root,stage);
-               p.Leftpress = false;
-               p.Rightpress = false;
-               p.Shift = false;
-            }*/
+            if(p.attacking&&p.atkbox.intersects(boss.hitbox.getBoundsInLocal())){
+               if(boss.damaged||boss.rolling) {
+               }
+               else{
+                  boss.health_value=boss.health_value-p.damage;
+                  //out.println(boss.health_value);
+                  boss.damaged=true;
+               }
+            }
+            
+            if(boss.attacking&&boss.atkbox.intersects(p.hitbox.getBoundsInLocal())){
+               if(p.damaged||p.rolling) {
+                  
+               }
+               else{
+                  p.health_value=p.health_value-100;
+                  p.damaged=true;
+               }
+            }
 
+            if(boss.health_value<=0&&!compliteBoss){
+               compliteBoss=true;
+               entity.remove(boss);
+               group.remove(boss);
+            }
             //Acting everthing
             Entity.frameRate = frameRatio;
             entity.forEach(E -> E.act());
             obj.forEach(B -> B.act());
             backGround.forEach(G -> G.act());
-            //trigger.forEach(T -> T.act(p.getX(),p.getY()));
          }
       };
       mainloop.start();
@@ -220,6 +233,7 @@ public class Main extends Application {
 
    public void addE(){
       entity.add(p);
+      entity.add(boss);
       //trigger.add(t);
    }
 
@@ -234,9 +248,21 @@ public class Main extends Application {
             root.getChildren().add(E.partZero);
             root.getChildren().add(E.partOne);
             if(!E.rolling)
+               root.getChildren().add(p.atkbox);
                root.getChildren().add(E.weapon);
          }
+         if(E instanceof Stirnava){
+            root.getChildren().add(boss.atkbox);
+         }
       });
+      root.getChildren().add(p.bloodBase);
+      root.getChildren().add(p.blood);
+      root.getChildren().add(p.staminaBase);
+      root.getChildren().add(p.stamina);
+      if(boss.fight&&!compliteBoss){
+         root.getChildren().add(boss.bloodBase);
+         root.getChildren().add(boss.blood);
+      }
    }
 
    public void forEach(Group root, Stage stage){
@@ -248,14 +274,20 @@ public class Main extends Application {
          else
             low_level.add(G);
       });
-      //trigger.forEach((T -> root.getChildren().addAll(T.sprite,T.exclamationMark)));
       entity.forEach(E-> group.add(E));
-      //subtitle should above the player
-      //trigger.forEach((T -> root.getChildren().addAll(T.E_key,T.messageBase,T.information)));
-
-      /*openning.step++;
-      openning.loadingIn(root,stage);*/
    }
+
+   public void doorCheck(){
+      int w=100,h=200;
+      fogDoor.setX((4900-w/2-Entity.Cam[0])*Entity.ratio[0]);
+      fogDoor.setY((1080-900-h+Entity.Cam[1])*Entity.ratio[1]);
+      fogDoor.setWidth(w*Entity.ratio[0]); 
+      fogDoor.setHeight(h*Entity.ratio[1]);
+      if(p.hitbox.intersects(fogDoor.getBoundsInLocal())){
+         boss.fight=true;
+      }
+   }
+
 }
 
 class groupCmp implements Comparator<Entity>

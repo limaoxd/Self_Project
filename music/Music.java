@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 public class Music {
-    public static Media m = new Media("file:///" + System.getProperty("user.dir").replace('\\', '/') + "/" + "music/StartingMusic.mp3");
+    public static Media m = new Media("file:///" + System.getProperty("user.dir").replace('\\', '/') + "/" + "music/traveler.mp3");
     public static MediaPlayer mp = new MediaPlayer(m);
 
     public static void play(){
